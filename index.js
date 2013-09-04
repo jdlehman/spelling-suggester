@@ -33,7 +33,29 @@ csv("word_frequency.csv")
 
 //render page
 app.get('/', function (req, res) {
-  res.render('home', { wordFreq: wordFreq });
+  res.render('home');
 });
 
-app.listen(port);
+var io = require('socket.io').listen(app.listen(port));
+
+//set up socket.io listeners
+io.sockets.on('connection', function(socket) {
+  socket.on('spell-check', function(data) {
+    console.log("Received word: " + data.word);
+    var correctWord = spellCheck(data.word);
+    console.log("Corrected word: " + correctWord);
+    io.sockets.emit('corrected', { correct : correctWord });
+  });
+});
+
+//check word spelling based on 
+//word frequency data
+function spellCheck(word) {
+  //check if word exists
+  if(word in wordFreq) {
+    return word;
+  }
+  else {
+    return "no";
+  }
+}
