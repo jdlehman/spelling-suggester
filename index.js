@@ -8,6 +8,7 @@ var port = 8080
 //use handlebars
 app.engine('handlebars', exphbs({defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
+app.use(express.static(__dirname + '/public'));
 
 var csv = require("fast-csv");
 
