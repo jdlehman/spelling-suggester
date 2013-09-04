@@ -1,0 +1,11 @@
+{
+  "name": "spell-checker",
+  "author": "jdlehman <jdlehman@email.wm.edu>",
+  "description": "Simple spell checker",
+  "dependencies" : {
+    "express": ">=3.x",
+    "mongodb": "~1.3.9",
+    "express3-handlebars": "latest",
+    "fast-csv": "latest"
+  }
+}
