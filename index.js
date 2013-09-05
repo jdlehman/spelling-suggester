@@ -57,41 +57,65 @@ function spellCheck(word) {
     return word;
   }
 
+  // get words edit distance of 1 away
+  var wordsDist1 = getWordsEditDistance1([word]);
+  var wordsDist2 = getWordsEditDistance1(wordsDist1);
+
+  //figure out most probable based on frequency
+
+  console.log("Dist1:");
+  console.log(wordsDist1);
+  console.log("Dist2:");
+  console.log(wordsDist2);
+  return wordsDist1[0];
+}
+
+function getWordsEditDistance1(words) {
+
   var possibleWords = [];
 
-  for(var i = 0; i < word.length; i++) {
-    //deleted letter
-    possibleWords.push(word.substring(0, i) + word.substring(i + 1));
-    for(var j = 0; j < alphabet.length; j++) {
-      //changed letter
-      var changedWord = word.substring(0, i) + alphabet[j] + word.substring(i + 1);
-      possibleWords.push(changedWord);
+  // generate list based on each input word
+  words.forEach(function(word) {
+    for(var i = 0; i < word.length; i++) {
+      //deleted letter
+      var deletedWord = word.substring(0, i) + word.substring(i + 1);
+      pushIfInSet(possibleWords, deletedWord);
 
-      //inserted letter
-      var insertedWord = word.substring(0, i) + alphabet[j] + word.substring(i);
-      possibleWords.push(insertedWord);
+      // iterate through alphabet
+      for(var j = 0; j < alphabet.length; j++) {
+        //changed letter
+        var replacedWord = word.substring(0, i) + alphabet[j] + word.substring(i + 1);
+        pushIfInSet(possibleWords, replacedWord);
 
-      // insertedWord special case
-      // insert letter at end of word
-      if(i == word.length - 1) {
-        insertedWord = word + alphabet[j];
-        possibleWords.push(insertedWord);
+        //inserted letter
+        var insertedWord = word.substring(0, i) + alphabet[j] + word.substring(i);
+        pushIfInSet(possibleWords, insertedWord);
+
+        // insertedWord special case
+        // insert letter at end of word
+        if(i == word.length - 1) {
+          insertedWord = word + alphabet[j];
+          pushIfInSet(possibleWords, insertedWord);
+        }
       }
     }
-  }
 
-  // swap letter words
-  for(var i = 0; i < word.length; i++) {
-    for(var j = i + 1; j < word.length; j++) {
-      //swap i with j
-      var swappedWord = word.substring(0, i) + word[j] + word.substring(i + 1, j) +  word[i] + word.substring(j + 1);
-      possibleWords.push(swappedWord);
+    // swap letter words
+    for(var i = 0; i < word.length; i++) {
+      for(var j = i + 1; j < word.length; j++) {
+        //swap i with j
+        var swappedWord = word.substring(0, i) + word[j] + word.substring(i + 1, j) +  word[i] + word.substring(j + 1);
+        pushIfInSet(possibleWords, swappedWord);
+      }
     }
-  }
+  });
 
-  console.log(possibleWords);
-  return possibleWords[0];
-  /*else {
-    return "no";
-  }*/
+  return possibleWords;
+
+}
+
+function pushIfInSet(array, word) {
+  if(word in wordFreq) {
+    array.push(word);
+  }
 }
