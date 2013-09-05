@@ -13,7 +13,8 @@ app.use(express.static(__dirname + '/public'));
 var csv = require("fast-csv");
 
 var wordFreq = {};
-var alphabet = 'abcdefghijklmnopqrstuvwxyz';
+// apostrophe for words like don't
+var alphabet = "abcdefghijklmnopqrstuvwxyz'";
 
 csv("word_frequency.csv")
     .on("data", function(data) {
@@ -58,19 +59,23 @@ function spellCheck(word) {
   }
 
   // get words edit distance of 1 away
-  var wordsDist1 = getWordsEditDistance1([word]);
-  var wordsDist2 = getWordsEditDistance1(wordsDist1);
+  var wordsDist1 = wordsEditDistance1([word]);
+  var wordsDist2 = wordsEditDistance1(wordsDist1);
+
+  // combine word possibilities
+  var allPossibleWords = wordsDist1.concat(wordsDist2);
 
   //figure out most probable based on frequency
+  var decision = mostProbableWord(allPossibleWords);
 
   console.log("Dist1:");
   console.log(wordsDist1);
   console.log("Dist2:");
   console.log(wordsDist2);
-  return wordsDist1[0];
+  return decision || "No suggestions";
 }
 
-function getWordsEditDistance1(words) {
+function wordsEditDistance1(words) {
 
   var possibleWords = [];
 
@@ -118,4 +123,27 @@ function pushIfInSet(array, word) {
   if(word in wordFreq) {
     array.push(word);
   }
+}
+
+// choose word based on frequency
+// and occurrences 
+function mostProbableWord(words) {
+  var frequencies = [];
+  var freqPairs = {};
+  var wordOccur = {};
+
+  words.forEach(function(word) {
+    // store word occurences
+    wordOccur[word] = (wordOccur[word] || 0) + 1;
+  });
+
+  words.forEach(function(word) {
+    var freq = wordFreq[word] * wordOccur[word];
+    frequencies.push(freq);
+    freqPairs[freq] = word;
+  });
+
+  var maxFreq = Math.max.apply(Math, frequencies);
+  console.log(wordOccur);
+  return freqPairs[maxFreq];
 }
