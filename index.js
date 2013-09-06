@@ -64,6 +64,7 @@ function spellCheck(word) {
   console.log(wordsDist1);
   console.log("Edit Distance 2 Words:");
   console.log(wordsDist2);
+
   return decision || "No suggestions";
 }
 
@@ -139,26 +140,30 @@ function pushIfInSet(wordSet, word) {
   }
 }
 
-// choose word based on frequency
-// and occurrences
+// choose word based on frequency and occurrences
 function mostProbableWord(words) {
   var frequencies = [];
-  var freqPairs = {};
   var wordOccur = {};
+  var freqPairs = {};
 
   words.forEach(function(word) {
     // store word occurences
     wordOccur[word] = (wordOccur[word] || 0) + 1;
-  });
 
-  words.forEach(function(word) {
+    // calculate new frequency based on
+    // word frequency and number of word occurrences
     var freq = wordFreq[word] * wordOccur[word];
+
+    // store to frequency array and
+    // pair with word in freqPair hash
     frequencies.push(freq);
     freqPairs[freq] = word;
   });
 
+  // get max frequency in array of frequencies
   var maxFreq = Math.max.apply(Math, frequencies);
-  console.log(wordOccur);
+
+  // return name of word paired with max frequency
   return freqPairs[maxFreq];
 }
 
