@@ -13,7 +13,7 @@ app.use(express.static(__dirname + '/public'));
 var csv = require("fast-csv");
 
 var wordFreq = {};
-// apostrophe for words like don't
+// Alphabet and apostrophe for words like don't
 var alphabet = "abcdefghijklmnopqrstuvwxyz'";
 
 csv("word_frequency.csv")
@@ -24,11 +24,11 @@ csv("word_frequency.csv")
           console.log("Done importing csv");
      })
     .on("error", function(err) {
-      //Handle error (because of ')
+      // Handle error (because of ')
       var errStr = err.toString();
       if(errStr.indexOf("'") != -1) {
         var data = errStr.split('row')[1].split(',');
-        wordFreq[data[0]] = data[1];
+        wordFreq[data[0].trim()] = data[1];
       }
     })
     .parse();
